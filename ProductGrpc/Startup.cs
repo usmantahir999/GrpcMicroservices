@@ -35,6 +35,7 @@ namespace ProductGrpc
                 endpoints.MapGrpcService<GreeterService>();
                 if (env.IsDevelopment())
                 {
+                    //https://github.com/fullstorydev/grpcurl/releases/tag/v1.9.2
                     //command: grpcurl localhost:5001 describe
                     //grpcurl -d "{ \"name\": \"World\" }" localhost:5001 greet.Greeter/SayHello
 
