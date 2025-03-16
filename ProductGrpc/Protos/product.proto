@@ -1,6 +1,8 @@
-syntax = "proto3";
+syntax = "proto3"; 
 
 option csharp_namespace = "ProductGrpc.Protos";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 service ProductProtoService{
 	rpc GetProduct(GetProductRequest) returns (ProductModel);
