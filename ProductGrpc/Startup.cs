@@ -36,7 +36,7 @@ namespace ProductGrpc
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>();
+                //endpoints.MapGrpcService<GreeterService>();
                 if (env.IsDevelopment())
                 {
                     //https://github.com/fullstorydev/grpcurl/releases/tag/v1.9.2
