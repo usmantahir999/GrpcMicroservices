@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Mapper\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Protobuf Include="Protos\product.proto" GrpcServices="Server" />
   </ItemGroup>
 

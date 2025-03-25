@@ -1,4 +1,5 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿using AutoMapper;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,10 +14,12 @@ namespace ProductGrpc.Services
     {
         private readonly ProductsContext _context;
         private readonly ILogger<ProductService> _logger;
-        public ProductService( ProductsContext context, ILogger<ProductService> logger)
+        private readonly IMapper _mapper;
+        public ProductService(ProductsContext context, ILogger<ProductService> logger, IMapper mapper)
         {
             _context = context;
             _logger = logger;
+            _mapper = mapper;
         }
 
         public override Task<Empty> Test(Empty request, ServerCallContext context)
@@ -30,15 +33,7 @@ namespace ProductGrpc.Services
             if (product == null) {
                 throw new System.Exception();
             }
-            var productModel = new ProductModel
-            {
-                ProductId = request.ProductId,
-                Description = product.Description,
-                Name = product.Name,
-                Price = product.Price,
-                Status = Protos.ProductStatus.Instock,
-                CreatedTime = Timestamp.FromDateTime(product.CreatedTime)
-            };
+            var productModel = _mapper.Map<ProductModel>(product);
             return productModel;
         }
 
@@ -47,43 +42,17 @@ namespace ProductGrpc.Services
             var productList = await _context.Product.ToListAsync();
             foreach (var product in productList) 
             {
-                var productModel = new ProductModel
-                {
-                    ProductId = product.ProductId,
-                    Description = product.Description,
-                    Name = product.Name,
-                    Price = product.Price,
-                    Status = Protos.ProductStatus.Instock,
-                    CreatedTime = Timestamp.FromDateTime(product.CreatedTime)
-                };
-
+                var productModel = _mapper.Map<ProductModel>(product);
                 await responseStream.WriteAsync(productModel);
             }
         }
 
         public override async Task<ProductModel> AddProduct(AddProductRequest request, ServerCallContext context)
         {
-            var product = new Product
-            {
-                ProductId = request.Product.ProductId,
-                Name = request.Product.Name,
-                Price = request.Product.Price,
-                Description = request.Product.Description,
-                Status = Models.ProductStatus.INSTOCK,
-                CreatedTime = request.Product.CreatedTime.ToDateTime()
-            };
-
+            var product = _mapper.Map<Product>(request.Product);
             _context.Product.Add(product);
             await _context.SaveChangesAsync();
-            var productModel = new ProductModel
-            {
-                ProductId = product.ProductId,
-                Description = product.Description,
-                Name = product.Name,
-                Price = product.Price,
-                Status = Protos.ProductStatus.Instock,
-                CreatedTime = Timestamp.FromDateTime(product.CreatedTime)
-            };
+            var productModel = _mapper.Map<ProductModel>(product);
             return productModel;
         }
     }
