@@ -29,10 +29,8 @@ namespace ProductGrpc.Services
 
         public override async Task<ProductModel> GetProduct(GetProductRequest request, ServerCallContext context)
         {
-            var product = await _context.Product.FindAsync(request.ProductId);
-            if (product == null) {
-                throw new System.Exception();
-            }
+            var product = await _context.Product.FindAsync(request.ProductId)
+                ?? throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id = {request.ProductId} not found"));
             var productModel = _mapper.Map<ProductModel>(product);
             return productModel;
         }
@@ -61,8 +59,8 @@ namespace ProductGrpc.Services
         {
             var product = _mapper.Map<Product>(request.Product);
             bool isExist = await _context.Product.AnyAsync(x => x.ProductId == request.Product.ProductId);
-            if (!isExist) { 
-                // throw rpc exception
+            if (!isExist) {
+                throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id = {request.Product.ProductId} not found"));
             }
             _context.Entry(product).State = EntityState.Modified;
             try
@@ -81,8 +79,8 @@ namespace ProductGrpc.Services
         public override async Task<DeleteProductResponse> DeleteProduct(DeleteProductRequest request, ServerCallContext context)
         {
             var product = await _context.Product.FirstAsync(x => x.ProductId == request.ProductId);
-            if (product == null) { 
-                // throw rpc exception
+            if (product == null) {
+                throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id = {request.ProductId} not found"));
             }
             _context.Product.Remove(product);
             var deleteCount = await _context.SaveChangesAsync();
