@@ -16,17 +16,15 @@ namespace ProductGrpcClient
             Thread.Sleep(2000);
             using var channel = GrpcChannel.ForAddress("https://localhost:5001");
             var client = new ProductProtoService.ProductProtoServiceClient(channel);
-            //GetProductAsync
             await GetProductAsync(client);
-
-            //GetAllProductAsync
             await GetAllProductAsync(client);
-            //AddProductAsync
             await AddProductAsync(client);
+            await UpdateProductAsync(client);
+            await DeleteProductAsync(client);
             Console.ReadLine();
         }
 
-        
+       
 
         private static async Task<AsyncServerStreamingCall<ProductModel>> GetAllProductAsync(ProductProtoService.ProductProtoServiceClient client)
         {
@@ -71,7 +69,34 @@ namespace ProductGrpcClient
                     CreatedTime = Timestamp.FromDateTime(DateTime.UtcNow)
                 }
             });
-            Console.WriteLine("GetProductAsync response" + addProductResponse.ToString());
+            Console.WriteLine("AddProductAsync response" + addProductResponse.ToString());
         }
+
+        private static async Task UpdateProductAsync(ProductProtoService.ProductProtoServiceClient client)
+        {
+            Console.WriteLine("UpdateProductAsync started!");
+            var updateProductResponse = await client.UpdateProductAsync(new UpdateProductRequest
+            {
+                Product = new ProductModel
+                {
+                    ProductId = 1,
+                    Name = "Red",
+                    Description = "New Red Phone Mi10T",
+                    Price = 699,
+                    Status = ProductStatus.Instock,
+                    CreatedTime = Timestamp.FromDateTime(DateTime.UtcNow)
+                }
+            });
+            Console.WriteLine("UpdateProductAsync response" + updateProductResponse.ToString());
+        }
+
+        private static async Task DeleteProductAsync(ProductProtoService.ProductProtoServiceClient client)
+        {
+            Console.WriteLine("DeleteProductAsync started!");
+            var deleteProductResponse = await client.DeleteProductAsync(new DeleteProductRequest { ProductId = 3 });
+            Console.WriteLine("DeleteProductAsync response" + deleteProductResponse.Success.ToString());
+        }
+
+        
     }
 }
