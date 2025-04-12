@@ -5,13 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.0" />
+    <None Remove="Protos\shoppingcart.proto" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.0" />
+	  <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\shoppingcart.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>
