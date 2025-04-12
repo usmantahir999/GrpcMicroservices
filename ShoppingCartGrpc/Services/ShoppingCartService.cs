@@ -54,7 +54,45 @@ namespace ShoppingCartGrpc.Services
         }
 
 
+        public override async Task<AddItemIntoShoppingCartResponse> AddItemIntoShoppingCart(IAsyncStreamReader<AddItemIntoShoppingCartRequest> requestStream, ServerCallContext context)
+        {
+            // Get sc if exist or not
+            // Check item if exist in sc or not
+            // if item exist +1 quantity
+            // if not exist add new item into sc
+            // check discount and set the item price
+            while (await requestStream.MoveNext())
+            {
+                var shoppingCart = await _context.ShoppingCart.FirstOrDefaultAsync(s => s.UserName == requestStream.Current.Username);
+                if (shoppingCart == null)
+                {
+                    throw new RpcException(new Status(StatusCode.NotFound, $"ShoppingCart with UserName={requestStream.Current.Username} is not found."));
+                }
+                var newAddedCartItem = _mapper.Map<ShoppingCartItem>(requestStream.Current.NewCartItem);
+                var cartItem = shoppingCart.Items.FirstOrDefault(i => i.ProductId == newAddedCartItem.ProductId);
+                if (null != cartItem)
+                {
+                    cartItem.Quantity++;
+                }
+                else
+                {
+                    // check discount and set the item price
+                    float discount = 100;
+                    newAddedCartItem.Price -=discount;
+                    shoppingCart.Items.Add(newAddedCartItem);
+                }
+            }
 
+            var insertCount = await _context.SaveChangesAsync();
+
+            var response = new AddItemIntoShoppingCartResponse
+            {
+                Success = insertCount > 0,
+                InsertCount = insertCount
+            };
+
+            return response;
+        }
 
         public override async Task<RemoveItemIntoShoppingCartResponse> RemoveItemIntoShoppingCart(RemoveItemIntoShoppingCartRequest request, ServerCallContext context)
         {
