@@ -27,7 +27,7 @@ namespace ShoppingCartGrpc.Services
             {
                 throw new RpcException(new Status(StatusCode.NotFound, $"Shopping cart with username = {request.Username} not found"));
             }
-            var shoppingCartModel = new ShoppingCartModel();
+            var shoppingCartModel = _mapper.Map<ShoppingCartModel>(shoppingCart);
             return shoppingCartModel;
         }
     }
