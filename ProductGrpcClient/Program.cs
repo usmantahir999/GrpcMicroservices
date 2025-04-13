@@ -3,7 +3,6 @@ using Grpc.Core;
 using Grpc.Net.Client;
 using ProductGrpc.Protos;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProductGrpcClient

@@ -1,4 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
