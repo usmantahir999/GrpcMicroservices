@@ -92,10 +92,13 @@ namespace ShoppingCartWorkerService
             {
                 _logger.LogInformation("GetShoppingCartAsync started..");
 
-                var headers = new Metadata();
-                headers.Add("Authorization", $"Bearer {token}");
+                var headers = new Metadata
+                {
+                    { "Authorization", $"Bearer {token}" }
+                };
 
-                shoppingCartModel = await scClient.GetShoppingCartAsync(new GetShoppingCartRequest { Username = _config.GetValue<string>("WorkerService:UserName") }, headers);
+                shoppingCartModel = await scClient.GetShoppingCartAsync(
+                    new GetShoppingCartRequest { Username = _config.GetValue<string>("WorkerService:UserName") }, headers);
 
                 _logger.LogInformation("GetShoppingCartAsync Response: {shoppingCartModel}", shoppingCartModel);
             }
