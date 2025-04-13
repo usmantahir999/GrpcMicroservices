@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using ShoppingCartGrpc.Data;
 using ShoppingCartGrpc.Services;
 using System;
@@ -30,6 +31,19 @@ namespace ShoppingCartGrpc
                 o.Address = new Uri(Configuration["GrpcConfigs:DiscountUrl"]);
             });
             services.AddScoped<DiscountService>();
+
+            services.AddAuthentication("Bearer")
+             .AddJwtBearer("Bearer", options =>
+             {
+                 options.Authority = "https://localhost:5005";
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateAudience = false
+                 };
+             });
+
+            services.AddAuthorization();
+
             services.AddDbContext<ShoppingCartContext>(options =>
                 options.UseInMemoryDatabase("ShoppingCart"));
             services.AddAutoMapper(typeof(Startup));
@@ -44,6 +58,8 @@ namespace ShoppingCartGrpc
             }
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
